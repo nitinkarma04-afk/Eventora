@@ -1,5 +1,6 @@
 const express = require('express');
 const mongoose = require('mongoose');
+ 
 const cors = require('cors');
 const dotenv = require('dotenv');
 
@@ -8,6 +9,7 @@ dotenv.config();
 const authRoutes = require('./routes/auth');
 const eventRoutes = require('./routes/events');
 const bookingRoutes = require('./routes/bookings');
+const aiRoutes = require('./routes/aiRoutes');
 
 const app = express();
 
@@ -19,7 +21,7 @@ app.use(express.json());
 app.use('/api/auth', authRoutes);
 app.use('/api/events', eventRoutes);
 app.use('/api/bookings', bookingRoutes);
-
+app.use('/api/ai', aiRoutes);
 // Database Connection
 mongoose.connect(process.env.MONGO_URI || 'mongodb://localhost:27017/eventora')
   .then(() => console.log('MongoDB Connected'))

@@ -4,7 +4,7 @@ Eventora is a full-stack MERN event booking platform that allows users to discov
 
 The platform also provides an Admin Dashboard where administrators can create and manage events, review booking requests, confirm or reject bookings, and monitor event and booking statistics.
 
----
+
 
 ## 🚀 Features
 
@@ -73,7 +73,7 @@ Eventora uses Nodemailer for sending:
 - Separate User and Admin dashboards
 - Built with React and Tailwind CSS
 
----
+
 
 ## 🛠️ Tech Stack
 
@@ -107,7 +107,7 @@ Eventora uses Nodemailer for sending:
 - VS Code
 - Postman
 
----
+
 
 ## 📂 Project Structure
 

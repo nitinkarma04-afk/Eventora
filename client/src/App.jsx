@@ -10,6 +10,7 @@ import AdminDashboard from './pages/AdminDashboard';
 import PaymentSuccess from './pages/PaymentSuccess';
 import PaymentFailed from './pages/PaymentFailed';
 import Events from './pages/Events';
+import AIAssistant from './pages/AIAssistant';
 
 function App() {
     return (
@@ -21,6 +22,7 @@ function App() {
                         <Route path="/" element={<Home />} />
                         <Route path="/events" element={<Events />} />
                         <Route path="/events/:id" element={<EventDetail />} />
+                        <Route path="/ai-assistant" element={<AIAssistant />} />
                         <Route path="/login" element={<Login />} />
                         <Route path="/register" element={<Register />} />
                         <Route path="/dashboard" element={<UserDashboard />} />

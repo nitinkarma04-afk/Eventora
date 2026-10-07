@@ -5,7 +5,8 @@ import {
     FaTicketAlt,
     FaArrowRight,
     FaUserCircle,
-    FaSignOutAlt
+    FaSignOutAlt,
+    FaRobot
 } from 'react-icons/fa';
 
 const Navbar = () => {
@@ -59,15 +60,29 @@ const Navbar = () => {
                         {/* Events */}
 
                         <Link
-    to="/events"
-    className={`rounded-xl px-3 py-2 text-sm font-semibold transition-all sm:px-4 ${
-        isActive('/events')
-            ? 'bg-blue-500/10 text-blue-400'
-            : 'text-slate-400 hover:bg-white/5 hover:text-white'
-    }`}
->
-    Events
-</Link>
+                            to="/events"
+                            className={`rounded-xl px-3 py-2 text-sm font-semibold transition-all sm:px-4 ${
+                                isActive('/events')
+                                    ? 'bg-blue-500/10 text-blue-400'
+                                    : 'text-slate-400 hover:bg-white/5 hover:text-white'
+                            }`}
+                        >
+                            Events
+                        </Link>
+
+                        {/* AI Assistant */}
+
+                        <Link
+                            to="/ai-assistant"
+                            className={`flex items-center gap-2 rounded-xl px-3 py-2 text-sm font-semibold transition-all sm:px-4 ${
+                                isActive('/ai-assistant')
+                                    ? 'bg-purple-500/15 text-purple-300 border border-purple-500/30 shadow-lg shadow-purple-900/20'
+                                    : 'text-slate-400 hover:bg-white/5 hover:text-white'
+                            }`}
+                        >
+                            <FaRobot className="text-blue-400 text-xs sm:text-sm" />
+                            <span>AI Assistant</span>
+                        </Link>
 
                         {user ? (
                             <>
