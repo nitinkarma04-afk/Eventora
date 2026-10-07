@@ -55,8 +55,57 @@ export const AuthProvider = ({ children }) => {
         localStorage.removeItem('token');
     };
 
+    const forgotPassword = async (email) => {
+        try {
+            const { data } = await api.post('/auth/forgot-password', { email });
+            return data;
+        } catch (error) {
+            throw error.response?.data?.message || 'Failed to process request';
+        }
+    };
+
+    const verifyResetOTP = async (email, otp) => {
+        try {
+            const { data } = await api.post('/auth/verify-reset-otp', { email, otp });
+            return data;
+        } catch (error) {
+            throw error.response?.data?.message || 'Invalid or expired verification code';
+        }
+    };
+
+    const resetPassword = async (email, otp, newPassword) => {
+        try {
+            const { data } = await api.post('/auth/reset-password', { email, otp, newPassword });
+            return data;
+        } catch (error) {
+            throw error.response?.data?.message || 'Failed to reset password';
+        }
+    };
+
+    const resendOTP = async (email, action = 'account_verification') => {
+        try {
+            const { data } = await api.post('/auth/resend-otp', { email, action });
+            return data;
+        } catch (error) {
+            throw error.response?.data?.message || 'Failed to resend code';
+        }
+    };
+
     return (
-        <AuthContext.Provider value={{ user, login, register, verifyOTP, logout, loading }}>
+        <AuthContext.Provider
+            value={{
+                user,
+                login,
+                register,
+                verifyOTP,
+                logout,
+                forgotPassword,
+                verifyResetOTP,
+                resetPassword,
+                resendOTP,
+                loading
+            }}
+        >
             {!loading && children}
         </AuthContext.Provider>
     );

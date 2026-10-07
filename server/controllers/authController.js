@@ -92,3 +92,119 @@ exports.verifyOTP = async (req, res) => {
         res.status(500).json({ message: 'Server Error' });
     }
 };
+
+exports.forgotPassword = async (req, res) => {
+    try {
+        const { email } = req.body;
+        if (!email || !email.trim()) {
+            return res.status(400).json({ message: 'Email address is required' });
+        }
+
+        const user = await User.findOne({ email: email.trim().toLowerCase() });
+        if (!user) {
+            // Return success to prevent email enumeration
+            return res.status(200).json({
+                success: true,
+                message: 'If an account exists with this email, a verification code has been sent.'
+            });
+        }
+
+        const otp = generateOTP();
+        await OTP.deleteMany({ email: user.email, action: 'password_reset' });
+        await OTP.create({ email: user.email, otp, action: 'password_reset' });
+        await sendOTPEmail(user.email, otp, 'password_reset');
+
+        res.status(200).json({
+            success: true,
+            message: 'If an account exists with this email, a verification code has been sent.',
+            email: user.email
+        });
+    } catch (error) {
+        res.status(500).json({ message: 'Server Error', error: error.message });
+    }
+};
+
+exports.verifyResetOTP = async (req, res) => {
+    try {
+        const { email, otp } = req.body;
+        if (!email || !otp) {
+            return res.status(400).json({ message: 'Email and verification code are required' });
+        }
+
+        const validOTP = await OTP.findOne({ email: email.trim().toLowerCase(), otp, action: 'password_reset' });
+        if (!validOTP) {
+            return res.status(400).json({ message: 'Invalid or expired verification code' });
+        }
+
+        res.status(200).json({
+            success: true,
+            message: 'Verification code verified successfully'
+        });
+    } catch (error) {
+        res.status(500).json({ message: 'Server Error', error: error.message });
+    }
+};
+
+exports.resetPassword = async (req, res) => {
+    try {
+        const { email, otp, newPassword } = req.body;
+        if (!email || !otp || !newPassword) {
+            return res.status(400).json({ message: 'All fields are required' });
+        }
+
+        if (newPassword.length < 8) {
+            return res.status(400).json({ message: 'Password must be at least 8 characters long' });
+        }
+
+        const validOTP = await OTP.findOne({ email: email.trim().toLowerCase(), otp, action: 'password_reset' });
+        if (!validOTP) {
+            return res.status(400).json({ message: 'Invalid or expired verification code' });
+        }
+
+        const user = await User.findOne({ email: email.trim().toLowerCase() });
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        const salt = await bcrypt.genSalt(10);
+        user.password = await bcrypt.hash(newPassword, salt);
+        await user.save();
+
+        await OTP.deleteOne({ _id: validOTP._id });
+
+        res.status(200).json({
+            success: true,
+            message: 'Password reset successfully. You can now log in with your new password.'
+        });
+    } catch (error) {
+        res.status(500).json({ message: 'Server Error', error: error.message });
+    }
+};
+
+exports.resendOTP = async (req, res) => {
+    try {
+        const { email, action } = req.body;
+        const validAction = action === 'password_reset' ? 'password_reset' : 'account_verification';
+
+        if (!email) {
+            return res.status(400).json({ message: 'Email is required' });
+        }
+
+        const user = await User.findOne({ email: email.trim().toLowerCase() });
+        if (!user) {
+            return res.status(400).json({ message: 'User not found' });
+        }
+
+        const otp = generateOTP();
+        await OTP.deleteMany({ email: user.email, action: validAction });
+        await OTP.create({ email: user.email, otp, action: validAction });
+        await sendOTPEmail(user.email, otp, validAction);
+
+        res.status(200).json({
+            success: true,
+            message: 'A new verification code has been sent to your email.'
+        });
+    } catch (error) {
+        res.status(500).json({ message: 'Server Error', error: error.message });
+    }
+};
